@@ -1,0 +1,42 @@
+// Inky.java
+import java.util.List;
+
+public class Inky extends Ghost {
+
+    private final int LOOK_AHEAD = 2;
+
+    public Inky(Graph graph, Node start) {
+        super(graph, start);
+    }
+
+    @Override
+    protected Node chooseNextTarget(Node pacmanPosition, Node pacmanDirection) {
+        Node blinkyTarget = pacmanPosition;
+
+        int aheadRow = pacmanPosition.row + LOOK_AHEAD * pacmanDirection.row;
+        int aheadCol = pacmanPosition.col + LOOK_AHEAD * pacmanDirection.col;
+        Node pinkyTarget = new Node(aheadRow, aheadCol);
+        if (!graph.isWalkable(pinkyTarget)) {
+            pinkyTarget = pacmanPosition;
+        }
+
+        // Hybrid: target the midpoint between the two targets
+        int midRow = (blinkyTarget.row + pinkyTarget.row) / 2;
+        int midCol = (blinkyTarget.col + pinkyTarget.col) / 2;
+        Node hybrid = new Node(midRow, midCol);
+
+        if (!graph.isWalkable(hybrid)) {
+            // fallback to Pinky’s target, then Blinky’s target
+            if (graph.isWalkable(pinkyTarget)) return pinkyTarget;
+            return blinkyTarget;
+        }
+
+        return hybrid;
+    }
+
+    @Override
+    protected List<Node> getPathTo(Node target) {
+        // You could justify either BFS or A* here. Using A* keeps it similar to Pinky.
+        return AStarPathfinder.shortestPath(graph, position, target);
+    }
+}
