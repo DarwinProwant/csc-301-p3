@@ -1,0 +1,62 @@
+// AStarPathfinder.java
+import java.util.*;
+
+public class AStarPathfinder {
+
+    private static int manhattan(Node a, Node b) {
+        return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+    }
+
+    public static List<Node> shortestPath(Graph graph, Node start, Node goal) {
+        PriorityQueue<Node> openSet = new PriorityQueue<>(
+                Comparator.comparingInt(n -> fScore.getOrDefault(n, Integer.MAX_VALUE))
+        );
+        Map<Node, Integer> gScore = new HashMap<>();
+        Map<Node, Integer> fScore = new HashMap<>();
+        Map<Node, Node> parent = new HashMap<>();
+        Set<Node> closedSet = new HashSet<>();
+
+        gScore.put(start, 0);
+        fScore.put(start, manhattan(start, goal));
+        openSet.add(start);
+
+        while (!openSet.isEmpty()) {
+            Node current = openSet.poll();
+
+            if (current.equals(goal)) {
+                return reconstructPath(parent, current);
+            }
+
+            closedSet.add(current);
+
+            for (Node neighbor : graph.getNeighbors(current)) {
+                if (!graph.isWalkable(neighbor) || closedSet.contains(neighbor)) {
+                    continue;
+                }
+
+                int tentativeG = gScore.getOrDefault(current, Integer.MAX_VALUE) + 1;
+
+                if (tentativeG < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
+                    parent.put(neighbor, current);
+                    gScore.put(neighbor, tentativeG);
+                    fScore.put(neighbor, tentativeG + manhattan(neighbor, goal));
+                    if (!openSet.contains(neighbor)) {
+                        openSet.add(neighbor);
+                    }
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<Node> reconstructPath(Map<Node, Node> parent, Node end) {
+        List<Node> path = new ArrayList<>();
+        Node cur = end;
+        while (cur != null) {
+            path.add(cur);
+            cur = parent.get(cur);
+        }
+        Collections.reverse(path);
+        return path;
+    }
+}
