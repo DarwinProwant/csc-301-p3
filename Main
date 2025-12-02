@@ -1,0 +1,42 @@
+public class Main {
+// Ghost.java
+public abstract class Ghost {
+
+    protected Node position;
+    protected Graph graph;
+
+    public Ghost(Graph graph, Node initialPosition) {
+        this.graph = graph;
+        this.position = initialPosition;
+    }
+
+    public Node getPosition() {
+        return position;
+    }
+
+    public void setPosition(Node position) {
+        this.position = position;
+    }
+
+    // Called each game tick
+    public void update(Node pacmanPosition, Node pacmanDirection) {
+        Node next = chooseNextTarget(pacmanPosition, pacmanDirection);
+        moveTowards(next);
+    }
+
+    protected abstract Node chooseNextTarget(Node pacmanPosition, Node pacmanDirection);
+
+    protected void moveTowards(Node target) {
+        if (target == null || target.equals(position)) return;
+
+        // Compute shortest path from current position to target
+        java.util.List<Node> path = getPathTo(target);
+        if (path.size() > 1) {
+            // path[0] is current position, path[1] is next step
+            this.position = path.get(1);
+        }
+    }
+
+    protected abstract java.util.List<Node> getPathTo(Node target);
+}
+}
