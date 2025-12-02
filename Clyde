@@ -1,0 +1,33 @@
+// Clyde.java
+import java.util.List;
+
+public class Clyde extends Ghost {
+
+    private static final int SCARED_DISTANCE = 8;
+    private Node scatterCorner; // e.g., bottom-left corner of maze
+
+    public Clyde(Graph graph, Node start, Node scatterCorner) {
+        super(graph, start);
+        this.scatterCorner = scatterCorner;
+    }
+
+    @Override
+    protected Node chooseNextTarget(Node pacmanPosition, Node pacmanDirection) {
+        int dist = Math.abs(pacmanPosition.row - position.row) +
+                   Math.abs(pacmanPosition.col - position.col);
+
+        if (dist >= SCARED_DISTANCE) {
+            // chase Pac-Man directly
+            return pacmanPosition;
+        } else {
+            // run away – head for corner
+            return scatterCorner;
+        }
+    }
+
+    @Override
+    protected List<Node> getPathTo(Node target) {
+        // BFS is enough here
+        return BFSPathfinder.shortestPath(graph, position, target);
+    }
+}
