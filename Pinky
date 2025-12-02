@@ -1,0 +1,31 @@
+// Pinky.java
+import java.util.List;
+
+public class Pinky extends Ghost {
+
+    private final int LOOK_AHEAD = 2; // "2 dots ahead"
+
+    public Pinky(Graph graph, Node start) {
+        super(graph, start);
+    }
+
+    @Override
+    protected Node chooseNextTarget(Node pacmanPosition, Node pacmanDirection) {
+        // pacmanDirection is a unit vector: (-1,0), (1,0), (0,-1), (0,1)
+        int targetRow = pacmanPosition.row + LOOK_AHEAD * pacmanDirection.row;
+        int targetCol = pacmanPosition.col + LOOK_AHEAD * pacmanDirection.col;
+        Node ahead = new Node(targetRow, targetCol);
+
+        // If ahead is not walkable (e.g., wall), fall back to Pac-Man's position
+        if (!graph.isWalkable(ahead)) {
+            return pacmanPosition;
+        }
+        return ahead;
+    }
+
+    @Override
+    protected List<Node> getPathTo(Node target) {
+        return AStarPathfinder.shortestPath(graph, position, target);
+    }
+}
+
