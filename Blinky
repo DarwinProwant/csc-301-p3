@@ -1,0 +1,20 @@
+// Blinky.java
+import java.util.List;
+
+public class Blinky extends Ghost {
+
+    public Blinky(Graph graph, Node start) {
+        super(graph, start);
+    }
+
+    @Override
+    protected Node chooseNextTarget(Node pacmanPosition, Node pacmanDirection) {
+        // Direct chase
+        return pacmanPosition;
+    }
+
+    @Override
+    protected List<Node> getPathTo(Node target) {
+        return BFSPathfinder.shortestPath(graph, position, target);
+    }
+}
