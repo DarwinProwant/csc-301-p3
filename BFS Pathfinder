@@ -1,0 +1,45 @@
+// BFSPathfinder.java
+import java.util.*;
+
+public class BFSPathfinder {
+
+    public static List<Node> shortestPath(Graph graph, Node start, Node goal) {
+        Queue<Node> queue = new LinkedList<>();
+        Map<Node, Node> parent = new HashMap<>();
+        Set<Node> visited = new HashSet<>();
+
+        queue.add(start);
+        visited.add(start);
+        parent.put(start, null);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.poll();
+
+            if (current.equals(goal)) {
+                return reconstructPath(parent, current);
+            }
+
+            for (Node neighbor : graph.getNeighbors(current)) {
+                if (!visited.contains(neighbor) && graph.isWalkable(neighbor)) {
+                    visited.add(neighbor);
+                    parent.put(neighbor, current);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // no path
+        return Collections.emptyList();
+    }
+
+    private static List<Node> reconstructPath(Map<Node, Node> parent, Node end) {
+        List<Node> path = new ArrayList<>();
+        Node cur = end;
+        while (cur != null) {
+            path.add(cur);
+            cur = parent.get(cur);
+        }
+        Collections.reverse(path);
+        return path;
+    }
+}
